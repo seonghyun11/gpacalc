@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcript GPA Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <i class="fas fa-graduation-cap header-icon"></i>
+                <h1>Transcript GPA Calculator</h1>
+                <p>Upload your university transcript PDF to calculate your cumulative GPA</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="upload-section">
+                <div class="upload-card">
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <h3>Upload Your Transcript</h3>
+                        <p>Drag and drop your PDF transcript here, or click to browse</p>
+                        <input type="file" id="fileInput" accept=".pdf" hidden>
+                        <button class="upload-btn" id="uploadBtn">
+                            <i class="fas fa-file-pdf"></i>
+                            Choose PDF File
+                        </button>
+                    </div>
+                    
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-details">
+                            <i class="fas fa-file-pdf file-icon"></i>
+                            <div class="file-text">
+                                <span class="file-name" id="fileName"></span>
+                                <span class="file-size" id="fileSize"></span>
+                            </div>
+                        </div>
+                        <button class="calculate-btn" id="calculateBtn">
+                            <i class="fas fa-calculator"></i>
+                            Calculate GPA
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Processing your transcript...</p>
+            </div>
+
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-card">
+                    <h2><i class="fas fa-chart-line"></i> Your GPA Results</h2>
+                    
+                    <!-- GPA Filter Buttons -->
+                    <div class="gpa-filters">
+                        <button class="filter-btn active" data-filter="all">
+                            <i class="fas fa-graduation-cap"></i>
+                            All Courses
+                        </button>
+                        <button class="filter-btn" data-filter="last-2-years">
+                            <i class="fas fa-calendar-alt"></i>
+                            Last 2 Years
+                        </button>
+                        <button class="filter-btn" data-filter="best-12">
+                            <i class="fas fa-star"></i>
+                            Best 12 Credits
+                        </button>
+                        <button class="filter-btn" data-filter="last-year">
+                            <i class="fas fa-clock"></i>
+                            Last Year
+                        </button>
+                    </div>
+                    
+                    <div class="gpa-display">
+                        <div class="gpa-item">
+                            <div class="gpa-value" id="gpa4Scale">0.00</div>
+                            <div class="gpa-label">GPA (4.0 Scale)</div>
+                            <div class="gpa-description" id="gpaDescription">All Courses</div>
+                        </div>
+                        <div class="gpa-item">
+                            <div class="gpa-value percentage" id="gpaPercentage">0.0%</div>
+                            <div class="gpa-label">GPA (Percentage)</div>
+                            <div class="gpa-description" id="gpaDescriptionPercent">All Courses</div>
+                        </div>
+                    </div>
+
+                    <div class="summary-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-book"></i>
+                            <span class="stat-label">Total Courses:</span>
+                            <span class="stat-value" id="totalCourses">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-award"></i>
+                            <span class="stat-label">Credits Earned:</span>
+                            <span class="stat-value" id="totalCreditsEarned">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-calculator"></i>
+                            <span class="stat-label">Credits in GPA:</span>
+                            <span class="stat-value" id="totalCreditsForGPA">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span class="stat-label">Failed Courses:</span>
+                            <span class="stat-value" id="failedCourses">0</span>
+                        </div>
+                    </div>
+
+                    <div class="courses-section">
+                        <h3><i class="fas fa-list"></i> Course Breakdown</h3>
+                        <div class="courses-table-container">
+                            <table class="courses-table" id="coursesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Course</th>
+                                        <th>Description</th>
+                                        <th>Attempted</th>
+                                        <th>Earned</th>
+                                        <th>Grade</th>
+                                        <th>GPA Points</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="coursesTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <button class="reset-btn" id="resetBtn">
+                        <i class="fas fa-redo"></i>
+                        Calculate Another Transcript
+                    </button>
+                </div>
+            </div>
+
+            <div class="error-section" id="errorSection" style="display: none;">
+                <div class="error-card">
+                    <i class="fas fa-exclamation-triangle error-icon"></i>
+                    <h3>Error Processing Transcript</h3>
+                    <p id="errorMessage"></p>
+                    <button class="reset-btn" id="errorResetBtn">
+                        <i class="fas fa-redo"></i>
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>
+                <i class="fas fa-info-circle"></i>
+                Supports standard university transcript formats. Ensure your PDF contains course codes, credits, and grades.
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Configure PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
