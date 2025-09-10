@@ -1,5 +1,3 @@
-// Static version of the GPA Calculator for GitHub Pages
-// Uses PDF.js for client-side PDF processing
 
 document.addEventListener('DOMContentLoaded', function() {
     // Get DOM elements
@@ -313,13 +311,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             let gradeNumeric = null;
                             
                             if (/^\d{3}$/.test(gradeStr)) {
+                                // Numeric grade (050, 080, etc.)
                                 gradeNumeric = parseInt(gradeStr);
                                 gpaPoints = convertGradeToGPA(gradeNumeric);
                             } else if (gradeStr === 'F') {
-                                // Handle F grades explicitly
+                                // Failed course - F grade
                                 gpaPoints = 0.0;
-                                gradeNumeric = null;
+                                gradeNumeric = 0; // Set to 0 for percentage calculation
+                            } else if (gradeStr === '' || gradeStr.trim() === '') {
+                                // Future/upcoming course with blank grade - skip these
+                                console.log(`Skipping future course ${subject} ${courseNum} - blank grade`);
+                                continue;
                             } else {
+                                // Unknown grade format - skip
+                                console.log(`Skipping course ${subject} ${courseNum} - unknown grade format: ${gradeStr}`);
                                 continue;
                             }
                             
@@ -387,7 +392,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Calculate percentage based on actual numeric grades, not GPA scale
         const totalPercentagePoints = courses.reduce((sum, course) => {
-            const numericGrade = course.grade_numeric || 0; // Use actual grade (050, 080, etc.)
+            let numericGrade = 0;
+            
+            // Get the numeric grade - handle different cases
+            if (course.grade_numeric !== null && course.grade_numeric !== undefined) {
+                numericGrade = course.grade_numeric; // This includes 0 for F grades
+            } else if (course.grade_display && /^\d{3}$/.test(course.grade_display)) {
+                numericGrade = parseInt(course.grade_display);
+            } else if (course.grade_display === 'F') {
+                numericGrade = 0; // F grades get 0%
+            }
+            
+            console.log(`Course ${course.course_code}: grade_numeric=${course.grade_numeric}, grade_display=${course.grade_display}, using=${numericGrade}`);
+            
             return sum + (course.credits_for_gpa * numericGrade);
         }, 0);
         
@@ -397,6 +414,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const gpa4_0 = totalPoints / totalCredits;
         const gpaPercentage = totalPercentagePoints / totalCredits; // Average of actual grades
+        
+        console.log(`GPA Calculation: totalCredits=${totalCredits}, totalPoints=${totalPoints}, totalPercentagePoints=${totalPercentagePoints}`);
+        console.log(`Final GPA: ${gpa4_0}, Final Percentage: ${gpaPercentage}`);
         
         return { 
             gpa4_0: Math.round(gpa4_0 * 100) / 100, 
@@ -544,7 +564,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Calculate percentage based on actual numeric grades
         const totalPercentagePoints = courses.reduce((sum, course) => {
-            const numericGrade = course.grade_numeric || 0;
+            let numericGrade = 0;
+            
+            // Get the numeric grade - handle different cases
+            if (course.grade_numeric !== null && course.grade_numeric !== undefined) {
+                numericGrade = course.grade_numeric; // This includes 0 for F grades
+            } else if (course.grade_display && /^\d{3}$/.test(course.grade_display)) {
+                numericGrade = parseInt(course.grade_display);
+            } else if (course.grade_display === 'F') {
+                numericGrade = 0; // F grades get 0%
+            }
+            
             return sum + (course.credits_for_gpa * numericGrade);
         }, 0);
         
