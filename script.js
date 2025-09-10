@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function() {
     // Get DOM elements
     const uploadArea = document.getElementById('uploadArea');
@@ -226,6 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 credits_earned: course.credits_earned,
                 credits_for_gpa: course.credits_for_gpa,
                 grade_display: course.grade_display,
+                grade_numeric: course.grade_numeric, // Include for percentage calculation
                 gpa_points: course.gpa_points,
                 term: course.term,
                 is_failed: course.is_failed
@@ -574,6 +574,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (course.grade_display === 'F') {
                 numericGrade = 0; // F grades get 0%
             }
+            
+            console.log(`[calculateFilteredGPA] Course ${course.course_code}: grade_numeric=${course.grade_numeric}, grade_display=${course.grade_display}, using=${numericGrade}`);
             
             return sum + (course.credits_for_gpa * numericGrade);
         }, 0);
