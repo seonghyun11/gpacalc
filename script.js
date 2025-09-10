@@ -385,12 +385,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const totalCredits = courses.reduce((sum, course) => sum + course.credits_for_gpa, 0);
         const totalPoints = courses.reduce((sum, course) => sum + (course.credits_for_gpa * course.gpa_points), 0);
         
+        // Calculate percentage based on actual numeric grades, not GPA scale
+        const totalPercentagePoints = courses.reduce((sum, course) => {
+            const numericGrade = course.grade_numeric || 0; // Use actual grade (050, 080, etc.)
+            return sum + (course.credits_for_gpa * numericGrade);
+        }, 0);
+        
         if (totalCredits === 0) {
             return { gpa4_0: 0, gpaPercentage: 0 };
         }
         
         const gpa4_0 = totalPoints / totalCredits;
-        const gpaPercentage = (gpa4_0 / 4.0) * 100;
+        const gpaPercentage = totalPercentagePoints / totalCredits; // Average of actual grades
         
         return { 
             gpa4_0: Math.round(gpa4_0 * 100) / 100, 
@@ -536,12 +542,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const totalCredits = courses.reduce((sum, course) => sum + course.credits_for_gpa, 0);
         const totalPoints = courses.reduce((sum, course) => sum + (course.credits_for_gpa * course.gpa_points), 0);
         
+        // Calculate percentage based on actual numeric grades
+        const totalPercentagePoints = courses.reduce((sum, course) => {
+            const numericGrade = course.grade_numeric || 0;
+            return sum + (course.credits_for_gpa * numericGrade);
+        }, 0);
+        
         if (totalCredits === 0) {
             return { gpa4_0: 0, gpaPercentage: 0 };
         }
         
         const gpa4_0 = totalPoints / totalCredits;
-        const gpaPercentage = (gpa4_0 / 4.0) * 100;
+        const gpaPercentage = totalPercentagePoints / totalCredits;
         
         return { gpa4_0, gpaPercentage };
     }
